@@ -47,18 +47,27 @@ export async function signup(
 ): Promise<Result | undefined> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const code = formData.get('code') as string
 
   const parsedCredentials = z
     .object({
       email: z.string().email(),
-      password: z.string().min(6)
+      password: z.string().min(6),
+      code: z.string().min(6)
     })
     .safeParse({
       email,
-      password
+      password,
+      code
     })
 
   if (parsedCredentials.success) {
+    if (code !== 'journaiDemoApril2024') {
+      return {
+        type: 'error',
+        resultCode: ResultCode.InvalidCredentials
+      }
+    }
     const salt = crypto.randomUUID()
 
     const encoder = new TextEncoder()

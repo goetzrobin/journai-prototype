@@ -19,6 +19,7 @@ export interface ChatPanelProps {
   setInput: (value: string) => void
   isAtBottom: boolean
   scrollToBottom: () => void
+  isAuthenticated: boolean
 }
 
 export function ChatPanel({
@@ -27,34 +28,37 @@ export function ChatPanel({
   input,
   setInput,
   isAtBottom,
-  scrollToBottom
+  scrollToBottom,
+  isAuthenticated
 }: ChatPanelProps) {
   const [aiState] = useAIState()
   const [messages, setMessages] = useUIState<typeof AI>()
   const { submitUserMessage } = useActions()
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
 
-  const exampleMessages = [
-    {
-      heading: 'What are the',
-      subheading: 'trending memecoins today?',
-      message: `What are the trending memecoins today?`
-    },
-    {
-      heading: 'What is the price of',
-      subheading: '$DOGE right now?',
-      message: 'What is the price of $DOGE right now?'
-    },
-    {
-      heading: 'I would like to buy',
-      subheading: '42 $DOGE',
-      message: `I would like to buy 42 $DOGE`
-    },
-    {
-      heading: 'What are some',
-      subheading: `recent events about $DOGE?`,
-      message: `What are some recent events about $DOGE?`
-    }
+  const exampleMessages: {heading: string;
+    subheading: string;
+    message: string;}[] = [
+    // {
+    //   heading: 'What are the',
+    //   subheading: 'trending memecoins today?',
+    //   message: `What are the trending memecoins today?`
+    // },
+    // {
+    //   heading: 'What is the price of',
+    //   subheading: '$DOGE right now?',
+    //   message: 'What is the price of $DOGE right now?'
+    // },
+    // {
+    //   heading: 'I would like to buy',
+    //   subheading: '42 $DOGE',
+    //   message: `I would like to buy 42 $DOGE`
+    // },
+    // {
+    //   heading: 'What are some',
+    //   subheading: `recent events about $DOGE?`,
+    //   message: `What are some recent events about $DOGE?`
+    // }
   ]
 
   return (
@@ -130,7 +134,7 @@ export function ChatPanel({
         ) : null}
 
         <div className="space-y-4 border-t bg-background px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
-          <PromptForm input={input} setInput={setInput} />
+          {isAuthenticated &&   <PromptForm input={input} setInput={setInput} />}
           <FooterText className="hidden sm:block" />
         </div>
       </div>

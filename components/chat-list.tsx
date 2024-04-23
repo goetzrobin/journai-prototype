@@ -41,12 +41,12 @@ export function ChatList({ messages, session, isShared }: ChatList) {
         </>
       ) : null}
 
-      {messages.map((message, index) => (
+      {messages.map((message, index) => JSON.stringify(message.display).includes('start-journai-conversation') ? null :
         <div key={message.id}>
           {message.display}
           {index < messages.length - 1 && <Separator className="my-4" />}
         </div>
-      ))}
+      )}
     </div>
   )
 }

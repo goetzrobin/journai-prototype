@@ -6,12 +6,13 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { useEffect, useState } from 'react'
-import { useUIState, useAIState } from 'ai/rsc'
+import { useUIState, useAIState, useActions } from 'ai/rsc'
 import { Session } from '@/lib/types'
 import { usePathname, useRouter } from 'next/navigation'
-import { Message } from '@/lib/chat/actions'
+import { AI, Message } from '@/lib/chat/actions'
 import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
 import { toast } from 'sonner'
+import {EmptyUnauthedScreen} from "@/components/empty-unauthed-screen";
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
@@ -26,8 +27,9 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
   const [input, setInput] = useState('')
   const [messages] = useUIState()
   const [aiState] = useAIState()
-
-  const [_, setNewChatId] = useLocalStorage('newChatId', id)
+  const { submitUserMessage } = useActions()
+  const [, setMessages] = useUIState<typeof AI>()
+  const [, setNewChatId] = useLocalStorage('newChatId', id)
 
   useEffect(() => {
     if (session?.user) {
@@ -69,11 +71,16 @@ export function Chat({ id, className, session, missingKeys }: ChatProps) {
         {messages.length ? (
           <ChatList messages={messages} isShared={false} session={session} />
         ) : (
-          <EmptyScreen />
+            !session?.user?.id ? <EmptyUnauthedScreen/> :
+          <EmptyScreen onClick={async () => {
+            const responseMessage = await submitUserMessage('start-journai-conversation')
+            setMessages(currentMessages => [...currentMessages, responseMessage])
+          }} />
         )}
         <div className="h-px w-full" ref={visibilityRef} />
       </div>
       <ChatPanel
+        isAuthenticated={!!session?.user?.id}
         id={id}
         input={input}
         setInput={setInput}
