@@ -85,8 +85,7 @@ export async function signup(
         await signIn('credentials', {
           email,
           password,
-          redirect: true,
-          redirectTo: '/new'
+          redirect: false,
         })
       }
 
